@@ -8,49 +8,68 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 
+// Home row mods macro
+#define HRML(k1,k2,k3,k4) &ht LSHFT k1  &ht LALT k2  &ht LCTRL k3  &ht LGUI k4
+#define HRMR(k1,k2,k3,k4) &ht RGUI k1  &ht RCTRL k2  &ht RALT k3  &ht RSHFT k4
+
+/ {
+    behaviors {
+        ht: hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <220>;
+            quick-tap-ms = <150>;
+            require-prior-idle-ms = <100>;
+            bindings = <&kp>, <&kp>;
+        };
+    };
+
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+        tri_layer {
+            if-layers = <1 2>;
+            then-layer = <3>;
+        };
+    };
+
 / {
         keymap {
                 compatible = "zmk,keymap";
 
                 default_layer {
-// -----------------------------------------------------------------------------------------
-// |  TAB |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U   |  I  |  O  |  P  | BSPC |
-// | CTRL |  A  |  S  |  D  |  F  |  G  |   |  H  |  J   |  K  |  L  |  ;  |  '   |
-// | SHFT |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M   |  ,  |  .  |  /  | ESC  |
-//                    | GUI | LWR | SPC |   | ENT | RSE  | ALT |
                         bindings = <
    &kp TAB   &kp Q &kp W &kp E &kp R &kp T   &kp Y &kp U  &kp I     &kp O   &kp P    &kp BSPC
-   &kp LCTRL &kp A &kp S &kp D &kp F &kp G   &kp H &kp J  &kp K     &kp L   &kp SEMI &kp SQT
+   &kp LCTRL HMRL(A, S, D, &kp F) &kp G   &kp H HRMR(J,   K,     L,   SQT) &kp SQT
    &kp LSHFT &kp Z &kp X &kp C &kp V &kp B   &kp N &kp M  &kp COMMA &kp DOT &kp FSLH &kp ESC
-                  &kp LGUI &mo 1 &kp SPACE   &kp RET &mo 2 &kp RALT
+                  &kp DELETE &lt 2 TAB &kp SPACE   &kp RET &lt 1 &kp C_MUTE
                         >;
-                };
-                lower_layer {
-// -----------------------------------------------------------------------------------------
-// |  TAB |  1  |  2  |  3  |  4  |  5  |   |  6  |  7  |  8  |  9  |  0  | BSPC |
-// | BTCLR| BT1 | BT2 | BT3 | BT4 | BT5 |   | LFT | DWN |  UP | RGT |     |      |
-// | SHFT |     |     |     |     |     |   |     |     |     |     |     |      |
-//                    | GUI |     | SPC |   | ENT |     | ALT |
+                        };
+                right_layer {
                         bindings = <
-   &kp TAB    &kp N1       &kp N2       &kp N3       &kp N4       &kp N5         &kp N6   &kp N7   &kp N8 &kp N9    &kp N0 &kp BSPC
-   &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4   &kp LEFT &kp DOWN &kp UP &kp RIGHT &trans &trans
-   &kp LSHFT  &trans       &trans       &trans       &trans       &trans         &trans   &trans   &trans &trans    &trans &trans
-                                    &kp LGUI     &trans       &kp SPACE      &kp RET  &trans   &kp RALT
+   &kp TAB &kp INSERT    &kp N1       &kp N2       &kp N3       &kp MINUS       &kp HOME         &kp PG_UP   &kp UP   &kp PG_DOWN &kp COLON &kp BSPC
+   &bt BT_CLR &kp DELETE &kp N4 &kp N5 &kp N6 &kp PLUS &kp END   &kp LEFT &kp DOWN &kp RIGHT &kp SEMI &trans
+   &kp LSHFT  &caps_word &kp N7       &kp N8       &kp N9       &kp N0       &trans         &trans   &trans   &trans &trans    &trans
+                                    &trans     &trans       &kp ESC      &trans  &trans   &trans
                         >;
-                };
+                        };
 
-                raise_layer {
-// -----------------------------------------------------------------------------------------
-// |  TAB |  !  |  @  |  #  |  $  |  %  |   |  ^  |  &  |  *  |  (  |  )  | BSPC |
-// | CTRL |     |     |     |     |     |   |  -  |  =  |  [  |  ]  |  \  |  `   |
-// | SHFT |     |     |     |     |     |   |  _  |  +  |  {  |  }  | "|" |  ~   |
-//                    | GUI |     | SPC |   | ENT |     | ALT |
+                left_layer {
                         bindings = <
-   &kp  TAB  &kp EXCL &kp AT &kp HASH &kp DLLR &kp PRCNT   &kp CARET &kp AMPS  &kp ASTRK &kp LPAR &kp RPAR &kp BSPC
-   &kp LCTRL &trans   &trans &trans   &trans   &trans      &kp MINUS &kp EQUAL &kp LBKT  &kp RBKT &kp BSLH &kp GRAVE
-   &kp LSHFT &trans   &trans &trans   &trans   &trans      &kp UNDER &kp PLUS  &kp LBRC  &kp RBRC &kp PIPE &kp TILDE
-                             &kp LGUI &trans   &kp SPACE   &kp RET   &trans    &kp RALT
+   &kp  TAB  &trans &kp LBKT &kp LBRC &kp RBRC &trans   &kp CARET &kp LPAR  &kp RPAR &kp RBKT &kp TILDE &kp BSPC
+   &kp LCTRL &kp EXCL   &kp AT &kp HASH   &kp DLLR &kp PRCNT      &kp ASTRK &kp MINUS &kp EQUAL  &kp BSLH &kp GRAVE &kp GRAVE
+   &kp LSHFT &trans   &trans &trans   &trans   &trans      &kp AMPS &kp UNDER  &kp PLUS  &kp PIPE &trans &kp TILDE
+                             &trans &trans   &trans   &trans   &trans    &trans
                         >;
+                        };
+                tri_layer {
+                        bindings = <
+   &kp  TAB  &sys_reset &trans &trans &trans &bt BT_SEL 0  &trans &trans  &trans &trans &sys_reset &trans
+   &kp LCTRL &bootloader   &trans &trans &trans  &bt BT_SEL 1      &trans &trans &trans  &trans &bootloader &kp GRAVE
+   &kp LSHFT &trans   &trans &trans   &bt BT_CLR   &bt BT_SEL 2      &trans &trans  &trans  &trans &trans &kp TILDE
+                             &trans &trans   &trans   &trans   &trans    &trans
+                        >;
+                        };
                 };
         };
 };
